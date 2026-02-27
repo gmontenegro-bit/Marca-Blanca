@@ -21,9 +21,19 @@ El handoff final se guarda en `docs/handoff/`.
 
 ## Contexto actual
 El prototipo implementado en codigo es `paypoint`.
+Archivos base de diseno ya creados:
+- `screens/paypoint-screen.md`
+- `tokens/paypoint-tokens.md`
+- `components/app-shell-component.md`
+- `components/service-tile-component.md`
+- `components/payment-flow-sheet-component.md`
+- `components/data-table-component.md`
+- `components/user-modal-component.md`
+- `components/feedback-components.md`
+
 Si se disenan mejoras, priorizar specs para:
-- login
-- dashboard
-- operaciones
-- usuarios
-- configuracion
+- app shell y navegacion por rol
+- dashboard y estadisticas
+- operaciones y flujo de pago
+- usuarios y modal de alta/edicion
+- configuracion de marca
