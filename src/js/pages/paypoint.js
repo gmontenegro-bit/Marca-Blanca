@@ -259,15 +259,8 @@ function enterApp(user) {
 
 /* Login */
 function doLogin() {
-  const cedInput = document.getElementById('in-cedula');
-  const passInput = document.getElementById('in-pass');
-  if (!cedInput || !passInput) {
-    enterApp(DEMO_USERS.admin);
-    return;
-  }
-
-  const ced = cedInput.value.trim();
-  const pas = passInput.value.trim();
+  const ced = document.getElementById('in-cedula').value.trim();
+  const pas = document.getElementById('in-pass').value.trim();
   if (!ced || !pas) {
     snack('Completa todos los campos', 'err');
     return;
@@ -279,8 +272,7 @@ function doLogin() {
 
 function doLogout() {
   S.myOps = [];
-  enterApp(DEMO_USERS.admin);
-  snack('Sesion reiniciada');
+  showPage('pg-login');
 }
 
 /* Pages & Views */
@@ -903,4 +895,6 @@ function snack(msg, type = 'ok') {
   _snackT = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
-enterApp(DEMO_USERS.admin);
+/* Default demo */
+document.getElementById('in-cedula').value = DEMO_USERS.admin.cedula;
+document.getElementById('in-pass').value = 'demo1234';

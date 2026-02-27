@@ -16,7 +16,68 @@
     <link href="/src/css/pages/paypoint.css" rel="stylesheet" />
   </head>
   <body>
-    <div id="pg-app" class="page active">
+    <div id="pg-login" class="page active">
+      <div class="login-bg-grid"></div>
+      <div class="login-bg-glow"></div>
+
+      <div class="login-hero">
+        <div class="login-hero-icon">
+          <span class="mi">receipt_long</span>
+        </div>
+        <h1 id="login-hero-name">PayPoint</h1>
+        <p>Gestion de pagos de servicios para tu punto de caja</p>
+      </div>
+
+      <div class="login-sheet">
+        <div class="login-sheet-handle"></div>
+        <h2>Iniciar sesion</h2>
+        <p>Accede con la cedula registrada por tu empresa</p>
+
+        <div style="margin-bottom: 20px">
+          <div
+            style="
+              font-size: 10px;
+              font-weight: 800;
+              text-transform: uppercase;
+              letter-spacing: 0.7px;
+              color: rgba(255, 255, 255, 0.5);
+              margin-bottom: 8px;
+              color: var(--on-sub);
+            "
+          >
+            Demo - ingresar como:
+          </div>
+          <div class="demo-pills">
+            <div class="demo-pill" onclick="demoRole('superadmin',this)">Super Admin</div>
+            <div class="demo-pill sel" onclick="demoRole('admin',this)">Administrador</div>
+            <div class="demo-pill" onclick="demoRole('operador',this)">Operador/a</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="f-label">Cedula de identidad</label>
+          <div class="f-wrap">
+            <div class="f-ico"><span class="mi">badge</span></div>
+            <input class="f-input" id="in-cedula" type="text" placeholder="000-000000-0000X" inputmode="text" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="f-label">Contrasena</label>
+          <div class="f-wrap">
+            <div class="f-ico"><span class="mi">lock_outline</span></div>
+            <input class="f-input" id="in-pass" type="password" placeholder="........" />
+          </div>
+        </div>
+
+        <button class="btn-login" onclick="doLogin()"><span class="mi">login</span> Entrar</button>
+
+        <div style="font-size: 12px; color: var(--on-sub); text-align: center; margin-top: 20px">
+          Olvidaste tu contrasena? Contacta a tu Administrador
+        </div>
+      </div>
+    </div>
+
+    <div id="pg-app" class="page">
       <header class="topbar">
         <div class="topbar-brand">
           <div class="topbar-logo" id="tb-logo"><span class="mi">payments</span></div>
