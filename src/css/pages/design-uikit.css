@@ -1,0 +1,317 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  font-family: "Sora", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background:
+    radial-gradient(1000px 500px at -5% -10%, rgba(60, 0, 95, 0.14), transparent 58%),
+    radial-gradient(900px 480px at 108% -8%, rgba(10, 163, 163, 0.14), transparent 52%),
+    var(--bg);
+  color: var(--on);
+}
+
+.ui-kit {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 16px 48px;
+}
+
+.ui-kit-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ui-kit-title {
+  margin: 0;
+  font-size: clamp(24px, 3.2vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+.ui-kit-sub {
+  margin: 8px 0 0;
+  color: var(--on-mid);
+  font-size: 14px;
+}
+
+.ui-kit-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ui-btn {
+  height: 38px;
+  border-radius: 12px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--surf);
+  color: var(--on);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ui-btn:hover {
+  border-color: var(--p-bdr);
+}
+
+.ui-btn.primary {
+  background: var(--p);
+  border-color: var(--p);
+  color: #fff;
+}
+
+.ui-stamp {
+  margin: 0 0 18px;
+  font-size: 12px;
+  color: var(--on-sub);
+}
+
+.ui-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.cmp {
+  background: color-mix(in srgb, var(--surf) 90%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: var(--sh-sm);
+}
+
+.cmp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cmp-name {
+  margin: 0;
+  font-size: 16px;
+}
+
+.cmp-file {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--on-sub);
+}
+
+.cmp-purpose {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--on-mid);
+  line-height: 1.5;
+}
+
+.preview {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--surf2), var(--surf));
+  padding: 10px;
+  margin-bottom: 12px;
+  min-height: 120px;
+}
+
+.preview-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--on-sub);
+  font-weight: 800;
+}
+
+.spec-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.spec {
+  background: var(--surf2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.spec h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--on-sub);
+}
+
+.spec ul,
+.spec ol {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--on-mid);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.spec p {
+  margin: 0;
+  color: var(--on-mid);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.kbd {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  border: 1px solid var(--line);
+  background: var(--surf);
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.mock-shell {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.mock-shell .bar {
+  height: 28px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surf);
+}
+
+.mock-shell .rows {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  min-height: 86px;
+}
+
+.mock-shell .side {
+  border-right: 1px solid var(--line);
+  background: var(--surf3);
+}
+
+.mock-shell .main {
+  background: var(--surf2);
+}
+
+.mock-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.mock-tiles .tile {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 12px;
+  color: var(--on-mid);
+  background: var(--surf);
+}
+
+.mock-tiles .tile.add {
+  border-style: dashed;
+}
+
+.mock-sheet {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surf);
+  padding: 10px;
+}
+
+.mock-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.mock-steps span {
+  display: block;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.mock-steps span.active {
+  background: var(--p);
+}
+
+.mock-line {
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surf2);
+  margin-bottom: 6px;
+}
+
+.mock-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.mock-table th,
+.mock-table td {
+  border: 1px solid var(--line);
+  padding: 5px;
+  text-align: left;
+}
+
+.mock-table th {
+  background: var(--surf2);
+  color: var(--on-mid);
+}
+
+.mock-snack {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.mock-modal {
+  margin: 0 auto;
+  max-width: 260px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surf);
+  padding: 9px;
+}
+
+.mock-modal .field {
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  margin-bottom: 6px;
+  background: var(--surf2);
+}
+
+@media (max-width: 760px) {
+  .ui-kit {
+    padding-top: 20px;
+  }
+
+  .ui-kit-head {
+    flex-direction: column;
+  }
+
+  .mock-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

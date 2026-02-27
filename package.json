@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "http-server . -p 5500 -c-1",
     "dev:open": "http-server . -p 5500 -c-1 -o /",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "design:build": "node scripts/generate-design-uikit.js",
+    "design:watch": "node scripts/generate-design-uikit.js --watch",
+    "design": "node scripts/design-dev.js"
   },
   "devDependencies": {
     "http-server": "^14.1.1"

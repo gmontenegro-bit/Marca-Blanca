@@ -1,83 +1,123 @@
 # Diseno-FE Prototype
 
-Prototipo para alinear equipos de diseno y front-end usando agentes en un sistema de administracion de tareas.
+Prototipo administrativo para alinear diseno y front-end con un flujo de trabajo basado en handoff.
 
-## Instalar npm en Windows
+## Objetivo
 
-`npm` se instala junto con Node.js.
+- Mantener paridad entre especificacion de diseno y codigo.
+- Implementar en arquitectura modular con HTML, CSS y JavaScript vanilla.
+- Evitar CSS/JS inline en HTML.
 
-Opciones recomendadas:
+## Stack
 
-1. Instalador oficial:
-   - Ir a `https://nodejs.org/`
-   - Descargar la version **LTS** para Windows
-   - Ejecutar el instalador y dejar opciones por defecto
-2. Con `winget` (PowerShell):
-   - Ejecutar `winget install OpenJS.NodeJS.LTS`
+- HTML
+- CSS
+- JavaScript vanilla
+- `http-server` para desarrollo local
 
-Verificar instalacion (en una terminal nueva):
+## Requisitos
 
-- `node -v`
-- `npm -v`
+- Node.js LTS
+- npm
 
-## Ejecucion simple (para diseno y FE)
+## Correr el proyecto
 
-Requisitos:
+1. Instalar dependencias:
+   - `npm install`
+2. Iniciar servidor local:
+   - `npm run dev`
+3. Abrir en navegador:
+   - `http://localhost:5500/`
 
-- Node.js LTS instalado
+Para abrir automaticamente el navegador:
 
-Pasos:
+- `npm run dev:open`
 
-1. Abrir terminal en la carpeta del proyecto.
-2. Ejecutar `npm install` (solo la primera vez).
-3. Ejecutar `npm run dev:open`.
-
-Esto abre el proyecto en `http://localhost:5500/`.
-
-Pantalla implementada actualmente:
+Pantalla principal actual:
 
 - `http://localhost:5500/src/html/pages/paypoint.html`
 
-Si preferis abrir manualmente el navegador:
+## Modo diseno (UIKit automatico)
 
-1. Ejecutar `npm run dev`.
-2. Abrir `http://localhost:5500/`.
+1. Ejecutar:
+   - `npm run design`
+2. Abrir:
+   - `http://localhost:5501/src/html/pages/design-uikit.html`
 
-## Estructura
+Este modo observa `design/components/*.md` y regenera automaticamente el UIKit en `src/`.
+
+Scripts disponibles:
+
+- `npm run design`: watch + servidor + apertura de UIKit.
+- `npm run design:watch`: solo watch/generacion.
+- `npm run design:build`: generacion unica.
+
+Entradas y salidas del flujo:
+
+- Entrada: `design/components/*.md`
+- Salidas generadas:
+  - `src/html/pages/design-uikit.html`
+  - `src/css/pages/design-uikit.css`
+  - `src/js/pages/design-uikit.js`
+
+## Estructura activa
 
 ```text
 .
 |-- AGENTS.md
 |-- README.md
-|-- design
-|   |-- AGENTS.md
-|   |-- components
-|   |-- prompts
-|   |-- screens
-|   `-- tokens
-|-- docs
-|   |-- decisions
-|   `-- handoff
-`-- src
-    |-- AGENTS.md
-    |-- assets
-    |   |-- icons
-    |   `-- images
-    |-- css
-    |   |-- base
-    |   |-- components
-    |   |-- pages
-    |   |-- tokens
-    |   `-- utilities
-    |-- html
-    |   |-- layouts
-    |   `-- pages
-    `-- js
-        |-- core
-        |-- modules
-        `-- pages
+|-- design/
+|   |-- components/
+|   |-- prompts/
+|   |-- screens/
+|   `-- tokens/
+|-- docs/
+|   |-- decisions/
+|   `-- handoff/
+`-- src/
+    |-- assets/
+    |   |-- icons/
+    |   `-- images/
+    |-- css/
+    |   |-- base/
+    |   |-- components/
+    |   |-- pages/
+    |   |-- tokens/
+    |   `-- utilities/
+    |-- html/
+    |   |-- layouts/
+    |   `-- pages/
+    `-- js/
+        |-- core/
+        |-- modules/
+        `-- pages/
 ```
 
-## Proximo paso sugerido
+## Archivos clave (paypoint)
 
-Documentar el handoff de la pantalla actual en `docs/handoff/paypoint.md` y su spec visual en `design/screens/paypoint-screen.md`.
+- `src/html/pages/paypoint.html`
+- `src/css/tokens/theme.css`
+- `src/css/base/reset.css`
+- `src/css/pages/paypoint.css`
+- `src/js/pages/paypoint.js`
+- `docs/handoff/paypoint.md`
+- `design/screens/paypoint-screen.md`
+
+## Flujo recomendado
+
+1. Diseno define o ajusta pantalla/componente en `design/`.
+2. Se documenta handoff en `docs/handoff/`.
+3. FE implementa o actualiza en `src/`.
+4. Se valida paridad visual y funcional.
+
+## Convenciones
+
+- Nombres nuevos en `kebab-case`.
+- Todo feature relevante debe reflejarse en codigo + handoff.
+- Separacion por responsabilidades: `tokens`, `base`, `pages`, `modules`.
+
+## Definition of done
+
+- Pantalla funcional en HTML/CSS/JS.
+- Estados importantes cubiertos (default, hover/focus, empty/error/loading cuando aplique).
+- Accesibilidad minima: estructura semantica, labels y foco visible.
