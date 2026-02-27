@@ -1,0 +1,34 @@
+# Dependencias
+node_modules/
+*.lock
+*.log
+*.tmp
+
+# Configuración
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Configuración local
+.npmrc
+.npm-cache/
+
+# Directorio de agentes
+.opencode/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build
+dist/
+build/

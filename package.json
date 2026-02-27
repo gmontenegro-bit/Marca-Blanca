@@ -1,0 +1,14 @@
+{
+  "name": "diseno-fe-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototipo de colaboracion Diseno + Front-End para sistema de tareas",
+  "scripts": {
+    "dev": "http-server . -p 5500 -c-1",
+    "dev:open": "http-server . -p 5500 -c-1 -o /",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
