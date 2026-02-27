@@ -1,0 +1,268 @@
+{
+  "roleLabels": {
+    "superadmin": "Super Admin",
+    "admin": "Administrador",
+    "operador": "Operador/a"
+  },
+  "login": {
+    "demoPassword": "demo1234",
+    "emptyFields": "Completa todos los campos"
+  },
+  "navigation": {
+    "companies": "Empresas",
+    "stats": "Estadisticas",
+    "users": "Usuarios",
+    "operations": "Operaciones",
+    "brandConfig": "Marca / Config.",
+    "configShort": "Config."
+  },
+  "services": {
+    "addLabel": "Agregar servicio",
+    "addWarn": "Solo Administradores pueden agregar servicios"
+  },
+  "payFlow": {
+    "titlePrefix": "Pago - ",
+    "manualTitle": "Ingresa el NIS",
+    "scanTitle": "Escanear factura",
+    "manualSub": "NIS - Numero de Identificacion del Servicio",
+    "scanSub": "Leer codigo de barras de la factura",
+    "scanOk": "Codigo escaneado correctamente",
+    "nisRequired": "Ingresa el NIS del cliente",
+    "billStatusExpired": "Vencida",
+    "billStatusPending": "Pendiente",
+    "noBillsTitle": "Sin facturas pendientes",
+    "noBillsSub": "No se encontraron facturas para este NIS",
+    "billSelectRequired": "Selecciona una factura",
+    "confirmTitlePrefix": "Confirmar - ",
+    "summary": {
+      "service": "Servicio",
+      "nis": "NIS",
+      "period": "Periodo",
+      "reference": "Referencia",
+      "due": "Vencimiento",
+      "total": "Total a cobrar",
+      "confirmHint": "Confirma que el cliente entrego el efectivo antes de procesar",
+      "processAction": "Procesar pago"
+    },
+    "receipt": {
+      "title": "Pago procesado",
+      "sub": "La operacion se registro correctamente",
+      "receiptCode": "Codigo de comprobante",
+      "operator": "Operador/a",
+      "datetime": "Fecha y hora",
+      "totalPaid": "Total pagado",
+      "send": "Enviar",
+      "print": "Imprimir",
+      "done": "Listo",
+      "whatsappSent": "Comprobante enviado por WhatsApp",
+      "printSending": "Enviando a impresora...",
+      "successSnackPrefix": "Pago de ",
+      "successSnackMiddle": " completado - $"
+    }
+  },
+  "stats": {
+    "operations": "Operaciones",
+    "amountProcessed": "Monto procesado",
+    "activeOperators": "Operadores activos",
+    "avgTime": "Tiempo promedio"
+  },
+  "opsTable": {
+    "status": {
+      "completado": "OK",
+      "pendiente": "Pendiente",
+      "fallido": "Fallido"
+    },
+    "empty": "Sin resultados"
+  },
+  "users": {
+    "roleAdmin": "Admin",
+    "roleOperator": "Operador/a",
+    "stateActive": "Activo",
+    "stateInactive": "Inactivo",
+    "modalAddTitle": "Agregar Usuario",
+    "modalEditTitle": "Editar Usuario",
+    "defaultTempPassword": "Cambiar123",
+    "toggleEnabled": "habilitado",
+    "toggleDisabled": "deshabilitado",
+    "saveMissing": "Completa nombre, apellido y cedula",
+    "saveSuccessSuffix": " agregado/a correctamente"
+  },
+  "brand": {
+    "defaultName": "PayPoint",
+    "saveSuccess": "Configuracion guardada correctamente"
+  },
+  "layout": {
+    "login": {
+      "heroSub": "Gestion de pagos de servicios para tu punto de caja",
+      "title": "Iniciar sesion",
+      "sub": "Accede con la cedula registrada por tu empresa",
+      "demoLabel": "Demo - ingresar como:",
+      "cedulaLabel": "Cedula de identidad",
+      "cedulaPlaceholder": "000-000000-0000X",
+      "passwordLabel": "Contrasena",
+      "passwordPlaceholder": "........",
+      "enter": "Entrar",
+      "forgot": "Olvidaste tu contrasena? Contacta a tu Administrador"
+    },
+    "topbar": {
+      "themeTitle": "Tema"
+    },
+    "navigation": {
+      "logout": "Cerrar sesion"
+    },
+    "ops": {
+      "sessionActive": "Sesion activa",
+      "operatorDefault": "Operador",
+      "title": "Pago de Servicios",
+      "sub": "Selecciona el servicio que solicita tu cliente",
+      "myOpsTitle": "Mis operaciones hoy",
+      "myOpsCountDefault": "0 ops.",
+      "emptyTitle": "Sin operaciones aun",
+      "emptySub": "Procesa un pago para ver el registro"
+    },
+    "dash": {
+      "title": "Panel de Control",
+      "sub": "Estadisticas de la plataforma",
+      "tabs": {
+        "day": "Hoy",
+        "month": "Mes",
+        "year": "Ano"
+      },
+      "chartTitle": "Operaciones por periodo",
+      "opsLogTitle": "Registro de Operaciones",
+      "searchPlaceholder": "Buscar...",
+      "services": {
+        "all": "Todos los servicios",
+        "luz": "Luz Electrica",
+        "agua": "Agua Potable",
+        "gas": "Gas Natural",
+        "tel": "Telefonia Celular",
+        "lafise": "Lafise"
+      },
+      "operators": {
+        "all": "Todos los operadores",
+        "ana": "Ana Torres",
+        "carlos": "Carlos Mendoza"
+      }
+    },
+    "users": {
+      "title": "Usuarios",
+      "sub": "Empleados habilitados en la plataforma",
+      "add": "Agregar",
+      "searchPlaceholder": "Buscar por nombre o cedula..."
+    },
+    "config": {
+      "title": "Configuracion de Marca",
+      "sub": "Personaliza la identidad de tu empresa",
+      "identityTitle": "Identidad visual",
+      "companyNameLabel": "Nombre de la empresa",
+      "logoLabel": "Logo (URL de imagen)",
+      "logoPlaceholder": "https://empresa.com/logo.png",
+      "primaryColorLabel": "Color primario",
+      "brandPreview": "Vista previa de tu marca",
+      "save": "Guardar cambios"
+    },
+    "companies": {
+      "title": "Empresas",
+      "sub": "Gestion global de la plataforma",
+      "testStatus": "Prueba",
+      "row1": {
+        "name": "PayPoint Demo",
+        "domain": "paypoint.com",
+        "ruc": "J-00123456-7",
+        "users": "12",
+        "ops": "1,340"
+      },
+      "row2": {
+        "name": "Minibank S.A.",
+        "domain": "minibank.ni",
+        "ruc": "J-00987654-1",
+        "users": "8",
+        "ops": "890"
+      },
+      "row3": {
+        "name": "FinCorp",
+        "domain": "fincorp.com.ni",
+        "ruc": "J-00456789-3",
+        "users": "3",
+        "ops": "210"
+      }
+    },
+    "pay": {
+      "step1Title": "Pago de Servicio",
+      "step1Sub": "Como ingresas la factura del cliente?",
+      "methodManualTitle": "Manual",
+      "methodManualSub": "Ingresar NIS del cliente",
+      "methodScanTitle": "Escanear",
+      "methodScanSub": "Leer codigo de barras",
+      "continue": "Continuar",
+      "step2Title": "Identificacion del cliente",
+      "step2Sub": "Ingresa el NIS del cliente",
+      "nisLabel": "NIS - Numero de Identificacion del Servicio",
+      "nisPlaceholder": "0000000",
+      "nisHint": "Encontras el NIS en la factura fisica del cliente",
+      "scanCameraHint": "Apunta la camara al codigo de barras",
+      "scanManualSeparator": "- o ingresa el codigo manualmente -",
+      "scanPlaceholder": "Codigo de barras",
+      "simulateScan": "Simular escaneo",
+      "searchBills": "Buscar facturas pendientes",
+      "step3Title": "Facturas pendientes",
+      "step3SubDefault": "NIS: -",
+      "confirmPayment": "Confirmar pago",
+      "step4Title": "Confirmar operacion",
+      "step4Sub": "Verifica los datos antes de procesar",
+      "step5Title": "Comprobante"
+    },
+    "userModal": {
+      "sub": "Solo usuarios registrados pueden iniciar sesion",
+      "nameLabel": "Nombre",
+      "namePlaceholder": "Nombre(s)",
+      "lastNameLabel": "Apellido",
+      "lastNamePlaceholder": "Apellido(s)",
+      "idTypeLabel": "Tipo de cedula",
+      "idTypeNational": "Cedula Nacional",
+      "idTypeResidence": "Residencia",
+      "idTypePassport": "Pasaporte",
+      "idNumberLabel": "Numero de cedula",
+      "idNumberPlaceholder": "000-000000-0000X",
+      "roleLabel": "Rol en la plataforma",
+      "tempPasswordLabel": "Contrasena temporal",
+      "cancel": "Cancelar",
+      "save": "Guardar usuario"
+    },
+    "tables": {
+      "myOps": {
+        "hour": "Hora",
+        "service": "Servicio",
+        "nisRef": "NIS / Ref.",
+        "amount": "Monto",
+        "status": "Estado"
+      },
+      "opsLog": {
+        "datetime": "Fecha / Hora",
+        "operator": "Operador/a",
+        "service": "Servicio",
+        "nisRef": "NIS / Ref.",
+        "amount": "Monto",
+        "status": "Estado"
+      },
+      "users": {
+        "operator": "Operador/a",
+        "cedula": "Cedula",
+        "role": "Rol",
+        "status": "Estado",
+        "ops": "Ops."
+      },
+      "companies": {
+        "company": "Empresa",
+        "ruc": "RUC",
+        "users": "Usuarios",
+        "opsMonth": "Ops./mes",
+        "status": "Estado"
+      }
+    },
+    "snack": {
+      "default": "OK"
+    }
+  }
+}

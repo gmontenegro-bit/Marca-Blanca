@@ -1,0 +1,354 @@
+<div id="pg-app" class="page">
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="topbar-logo" id="tb-logo"><span class="mi">payments</span></div>
+          <span class="topbar-name" id="tb-name" data-i18n="brand.defaultName">PayPoint</span>
+        </div>
+        <div class="topbar-sp"></div>
+        <div class="topbar-acts">
+          <span class="role-chip" id="role-chip" data-i18n="users.roleAdmin">Admin</span>
+          <button class="ib" onclick="toggleTheme()" title="Tema" data-i18n-title="layout.topbar.themeTitle">
+            <span class="mi" id="theme-ico">dark_mode</span>
+          </button>
+          <div class="avatar" id="user-av">?</div>
+        </div>
+      </header>
+
+      <nav class="sidebar" id="sidebar">
+        <div id="sb-top"></div>
+        <div class="nav-sp"></div>
+        <div id="sb-bot"></div>
+        <button class="nav-logout" onclick="doLogout()"><span class="mi">logout</span> <span data-i18n="layout.navigation.logout">Cerrar sesion</span></button>
+      </nav>
+
+      <nav class="bottom-nav" id="bottom-nav"></nav>
+
+      <div class="main-scroll" id="main-scroll">
+        <div id="v-ops" class="view">
+          <div class="sess-strip">
+            <span class="mi">verified_user</span>
+            <div class="sess-info"><span data-i18n="layout.ops.sessionActive">Sesion activa</span> - <strong id="op-name-strip" data-i18n="layout.ops.operatorDefault">Operador</strong></div>
+            <span class="sess-clock" id="clock">--:--:--</span>
+          </div>
+
+          <div class="ph">
+            <div class="ph-title" data-i18n="layout.ops.title">Pago de Servicios</div>
+            <div class="ph-sub" data-i18n="layout.ops.sub">Selecciona el servicio que solicita tu cliente</div>
+          </div>
+
+          <div class="svc-grid" id="svc-grid"></div>
+
+          <div class="card cp">
+            <div class="sec-hd">
+              <span class="sec-title" data-i18n="layout.ops.myOpsTitle">Mis operaciones hoy</span>
+              <span class="chip chip-n" id="my-ops-chip" data-i18n="layout.ops.myOpsCountDefault">0 ops.</span>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-i18n="layout.tables.myOps.hour">Hora</th>
+                    <th data-i18n="layout.tables.myOps.service">Servicio</th>
+                    <th data-i18n="layout.tables.myOps.nisRef">NIS / Ref.</th>
+                    <th data-i18n="layout.tables.myOps.amount">Monto</th>
+                    <th data-i18n="layout.tables.myOps.status">Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="my-ops-tbody">
+                  <tr>
+                    <td colspan="5">
+                      <div class="empty">
+                        <span class="mi">receipt</span>
+                        <div class="empty-t" data-i18n="layout.ops.emptyTitle">Sin operaciones aun</div>
+                        <div class="empty-s" data-i18n="layout.ops.emptySub">Procesa un pago para ver el registro</div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="v-dash" class="view">
+          <div class="ph">
+            <div class="ph-title" data-i18n="layout.dash.title">Panel de Control</div>
+            <div class="ph-sub" data-i18n="layout.dash.sub">Estadisticas de la plataforma</div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" onclick="setPeriod('dia',this)" data-i18n="layout.dash.tabs.day">Hoy</button>
+            <button class="tab" onclick="setPeriod('mes',this)" data-i18n="layout.dash.tabs.month">Mes</button>
+            <button class="tab" onclick="setPeriod('anio',this)" data-i18n="layout.dash.tabs.year">Ano</button>
+          </div>
+
+          <div class="stats-grid" id="stats-grid"></div>
+
+          <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px">
+            <div class="card cp" style="min-width: 0">
+              <div class="sec-title" style="margin-bottom: 16px" data-i18n="layout.dash.chartTitle">Operaciones por periodo</div>
+              <div class="chart-bars" id="chart-bars"></div>
+            </div>
+          </div>
+
+          <div class="card cp">
+            <div class="sec-title" style="margin-bottom: 14px" data-i18n="layout.dash.opsLogTitle">Registro de Operaciones</div>
+            <div class="filt-row">
+              <div class="filt-wrap">
+                <div class="filt-ico"><span class="mi">search</span></div>
+                <input class="filt-in" style="min-width: 160px" placeholder="Buscar..." data-i18n-placeholder="layout.dash.searchPlaceholder" oninput="filterOps(this.value)" />
+              </div>
+              <select class="filt-sel" onchange="filterOps('',this.value)">
+                <option value="" data-i18n="layout.dash.services.all">Todos los servicios</option>
+                <option data-i18n="layout.dash.services.luz">Luz Electrica</option>
+                <option data-i18n="layout.dash.services.agua">Agua Potable</option>
+                <option data-i18n="layout.dash.services.gas">Gas Natural</option>
+                <option data-i18n="layout.dash.services.tel">Telefonia Celular</option>
+                <option data-i18n="layout.dash.services.lafise">Lafise</option>
+              </select>
+              <select class="filt-sel" onchange="">
+                <option value="" data-i18n="layout.dash.operators.all">Todos los operadores</option>
+                <option data-i18n="layout.dash.operators.ana">Ana Torres</option>
+                <option data-i18n="layout.dash.operators.carlos">Carlos Mendoza</option>
+              </select>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-i18n="layout.tables.opsLog.datetime">Fecha / Hora</th>
+                    <th data-i18n="layout.tables.opsLog.operator">Operador/a</th>
+                    <th data-i18n="layout.tables.opsLog.service">Servicio</th>
+                    <th data-i18n="layout.tables.opsLog.nisRef">NIS / Ref.</th>
+                    <th data-i18n="layout.tables.opsLog.amount">Monto</th>
+                    <th data-i18n="layout.tables.opsLog.status">Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="ops-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="v-users" class="view">
+          <div class="ph" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+            <div>
+              <div class="ph-title" data-i18n="layout.users.title">Usuarios</div>
+              <div class="ph-sub" data-i18n="layout.users.sub">Empleados habilitados en la plataforma</div>
+            </div>
+            <button class="btn btn-p" onclick="openUserModal()" style="flex-shrink: 0; margin-top: 4px">
+              <span class="mi">person_add</span><span data-i18n="layout.users.add">Agregar</span>
+            </button>
+          </div>
+
+          <div class="filt-row">
+            <div class="filt-wrap" style="flex: 1">
+              <div class="filt-ico"><span class="mi">search</span></div>
+              <input
+                class="filt-in"
+                style="width: 100%"
+                placeholder="Buscar por nombre o cedula..."
+                data-i18n-placeholder="layout.users.searchPlaceholder"
+                oninput="filterUsers(this.value)"
+              />
+            </div>
+          </div>
+
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="layout.tables.users.operator">Operador/a</th>
+                  <th data-i18n="layout.tables.users.cedula">Cedula</th>
+                  <th data-i18n="layout.tables.users.role">Rol</th>
+                  <th data-i18n="layout.tables.users.status">Estado</th>
+                  <th data-i18n="layout.tables.users.ops">Ops.</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="v-config" class="view">
+          <div class="ph">
+            <div class="ph-title" data-i18n="layout.config.title">Configuracion de Marca</div>
+            <div class="ph-sub" data-i18n="layout.config.sub">Personaliza la identidad de tu empresa</div>
+          </div>
+
+          <div class="card cp" style="margin-bottom: 16px">
+            <div class="cfg-sec-t" data-i18n="layout.config.identityTitle">Identidad visual</div>
+            <div class="fm-field">
+              <label class="fm-label" data-i18n="layout.config.companyNameLabel">Nombre de la empresa</label>
+              <input
+                class="fm-input"
+                id="cfg-name"
+                type="text"
+                value="PayPoint"
+                data-i18n-value="brand.defaultName"
+                oninput="previewBrand()"
+              />
+            </div>
+            <div class="fm-field">
+              <label class="fm-label" data-i18n="layout.config.logoLabel">Logo (URL de imagen)</label>
+              <input
+                class="fm-input"
+                id="cfg-logo"
+                type="url"
+                placeholder="https://empresa.com/logo.png"
+                data-i18n-placeholder="layout.config.logoPlaceholder"
+                oninput="previewBrand()"
+              />
+            </div>
+            <div class="fm-field">
+              <label class="fm-label" data-i18n="layout.config.primaryColorLabel">Color primario</label>
+              <div class="color-swatches">
+                <div class="c-sw sel" style="background: #3c005f" onclick="applyColor('#3C005F',this)"></div>
+                <div class="c-sw" style="background: #1a237e" onclick="applyColor('#1A237E',this)"></div>
+                <div class="c-sw" style="background: #004d40" onclick="applyColor('#004D40',this)"></div>
+                <div class="c-sw" style="background: #b71c1c" onclick="applyColor('#B71C1C',this)"></div>
+                <div class="c-sw" style="background: #e65100" onclick="applyColor('#E65100',this)"></div>
+                <div class="c-sw" style="background: #0d47a1" onclick="applyColor('#0D47A1',this)"></div>
+                <div class="c-sw" style="background: #1b5e20" onclick="applyColor('#1B5E20',this)"></div>
+              </div>
+              <div class="color-row">
+                <input class="c-in" id="cfg-color-pick" type="color" value="#3C005F" oninput="applyColor(this.value,null)" />
+                <input
+                  class="fm-input"
+                  id="cfg-color-hex"
+                  style="width: 120px"
+                  value="#3C005F"
+                  placeholder="#000000"
+                  oninput="applyColorHex(this.value)"
+                />
+              </div>
+            </div>
+
+            <div class="bp" id="bp-preview">
+              <div class="bp-logo" id="bp-logo"><span class="mi">payments</span></div>
+              <div>
+                <div class="bp-name" id="bp-name" data-i18n="brand.defaultName">PayPoint</div>
+                <div class="bp-lbl" data-i18n="layout.config.brandPreview">Vista previa de tu marca</div>
+              </div>
+            </div>
+
+            <button class="btn btn-p btn-full" style="margin-top: 20px; height: 48px" onclick="saveBrand()">
+              <span class="mi">save</span> <span data-i18n="layout.config.save">Guardar cambios</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="v-companies" class="view">
+          <div class="ph">
+            <div class="ph-title" data-i18n="layout.companies.title">Empresas</div>
+            <div class="ph-sub" data-i18n="layout.companies.sub">Gestion global de la plataforma</div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="layout.tables.companies.company">Empresa</th>
+                  <th data-i18n="layout.tables.companies.ruc">RUC</th>
+                  <th data-i18n="layout.tables.companies.users">Usuarios</th>
+                  <th data-i18n="layout.tables.companies.opsMonth">Ops./mes</th>
+                  <th data-i18n="layout.tables.companies.status">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 10px">
+                      <div
+                        style="
+                          width: 32px;
+                          height: 32px;
+                          border-radius: 8px;
+                          background: var(--p);
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          color: white;
+                          font-weight: 800;
+                          font-size: 12px;
+                        "
+                      >
+                        PP
+                      </div>
+                      <div>
+                        <div style="font-weight: 700" data-i18n="layout.companies.row1.name">PayPoint Demo</div>
+                        <div style="font-size: 11px; color: var(--on-mid)" data-i18n="layout.companies.row1.domain">paypoint.com</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="mono" data-i18n="layout.companies.row1.ruc">J-00123456-7</td>
+                  <td data-i18n="layout.companies.row1.users">12</td>
+                  <td class="mono" data-i18n="layout.companies.row1.ops">1,340</td>
+                  <td><span class="chip chip-g" data-i18n="users.stateActive">Activo</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 10px">
+                      <div
+                        style="
+                          width: 32px;
+                          height: 32px;
+                          border-radius: 8px;
+                          background: #1a237e;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          color: white;
+                          font-weight: 800;
+                          font-size: 12px;
+                        "
+                      >
+                        MB
+                      </div>
+                      <div>
+                        <div style="font-weight: 700" data-i18n="layout.companies.row2.name">Minibank S.A.</div>
+                        <div style="font-size: 11px; color: var(--on-mid)" data-i18n="layout.companies.row2.domain">minibank.ni</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="mono" data-i18n="layout.companies.row2.ruc">J-00987654-1</td>
+                  <td data-i18n="layout.companies.row2.users">8</td>
+                  <td class="mono" data-i18n="layout.companies.row2.ops">890</td>
+                  <td><span class="chip chip-g" data-i18n="users.stateActive">Activo</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 10px">
+                      <div
+                        style="
+                          width: 32px;
+                          height: 32px;
+                          border-radius: 8px;
+                          background: #004d40;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          color: white;
+                          font-weight: 800;
+                          font-size: 12px;
+                        "
+                      >
+                        FC
+                      </div>
+                      <div>
+                        <div style="font-weight: 700" data-i18n="layout.companies.row3.name">FinCorp</div>
+                        <div style="font-size: 11px; color: var(--on-mid)" data-i18n="layout.companies.row3.domain">fincorp.com.ni</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="mono" data-i18n="layout.companies.row3.ruc">J-00456789-3</td>
+                  <td data-i18n="layout.companies.row3.users">3</td>
+                  <td class="mono" data-i18n="layout.companies.row3.ops">210</td>
+                  <td><span class="chip chip-a" data-i18n="layout.companies.testStatus">Prueba</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>

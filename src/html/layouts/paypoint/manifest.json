@@ -1,0 +1,9 @@
+{
+  "parts": [
+    "/src/html/layouts/paypoint/login-layout.html",
+    "/src/html/layouts/paypoint/app-layout.html",
+    "/src/html/layouts/paypoint/pay-overlay-layout.html",
+    "/src/html/layouts/paypoint/user-overlay-layout.html",
+    "/src/html/layouts/paypoint/snack-layout.html"
+  ]
+}

@@ -1,4 +1,30 @@
 {
-  "generatedAt": 1772217691839,
-  "componentCount": 6
+  "generatedAt": 1772221425470,
+  "componentCount": 6,
+  "components": [
+    {
+      "specFile": "app-shell-component.md",
+      "templateFile": "app-shell-component.html"
+    },
+    {
+      "specFile": "data-table-component.md",
+      "templateFile": "data-table-component.html"
+    },
+    {
+      "specFile": "feedback-components.md",
+      "templateFile": "feedback-components.html"
+    },
+    {
+      "specFile": "payment-flow-sheet-component.md",
+      "templateFile": "payment-flow-sheet-component.html"
+    },
+    {
+      "specFile": "service-tile-component.md",
+      "templateFile": "service-tile-component.html"
+    },
+    {
+      "specFile": "user-modal-component.md",
+      "templateFile": "user-modal-component.html"
+    }
+  ]
 }

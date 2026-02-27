@@ -6,6 +6,7 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'design', 'components');
 const HTML_OUT = path.join(ROOT, 'src', 'html', 'pages', 'design-uikit.html');
+const COMPONENT_HTML_DIR = path.join(ROOT, 'src', 'html', 'components', 'design-uikit');
 const CSS_OUT = path.join(ROOT, 'src', 'css', 'pages', 'design-uikit.css');
 const JS_OUT = path.join(ROOT, 'src', 'js', 'pages', 'design-uikit.js');
 const META_OUT = path.join(ROOT, 'design', '.uikit-meta.json');
@@ -331,13 +332,20 @@ body {
 const JS_TEMPLATE = `(() => {
   let lastStamp = null;
 
+  async function getMeta() {
+    const res = await fetch('/design/.uikit-meta.json?ts=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) {
+      return null;
+    }
+    return res.json();
+  }
+
   async function checkStamp() {
     try {
-      const res = await fetch('/design/.uikit-meta.json?ts=' + Date.now(), { cache: 'no-store' });
-      if (!res.ok) {
+      const data = await getMeta();
+      if (!data) {
         return;
       }
-      const data = await res.json();
       if (lastStamp === null) {
         lastStamp = data.generatedAt;
         return;
@@ -347,6 +355,38 @@ const JS_TEMPLATE = `(() => {
       }
     } catch (err) {
       // Ignore polling errors (usually caused by local server restart).
+    }
+  }
+
+  async function renderComponents() {
+    const grid = document.getElementById('ui-grid');
+    if (!grid) {
+      return;
+    }
+
+    try {
+      const data = await getMeta();
+      if (!data) {
+        return;
+      }
+
+      const items = Array.isArray(data.components) ? data.components : [];
+      const cards = await Promise.all(
+        items.map(async (item) => {
+          const res = await fetch('/src/html/components/design-uikit/' + item.templateFile + '?ts=' + data.generatedAt, {
+            cache: 'no-store',
+          });
+          if (!res.ok) {
+            throw new Error('No se pudo cargar ' + item.templateFile);
+          }
+          return res.text();
+        }),
+      );
+
+      grid.innerHTML = cards.join('');
+      lastStamp = data.generatedAt;
+    } catch (err) {
+      grid.innerHTML = '<p class="ui-stamp">No fue posible cargar los componentes del UIKit.</p>';
     }
   }
 
@@ -362,7 +402,7 @@ const JS_TEMPLATE = `(() => {
     themeBtn.addEventListener('click', toggleTheme);
   }
 
-  checkStamp();
+  renderComponents();
   setInterval(checkStamp, 2000);
 })();`;
 
@@ -536,7 +576,7 @@ function renderComponentCard(fileName, parsed) {
   )}</div><div class="spec-cols">${blocks.join('')}</div></section>`;
 }
 
-function buildHtml(componentEntries) {
+function buildHtml(componentCount) {
   const stamp = new Date().toLocaleString('es-NI', {
     year: 'numeric',
     month: '2-digit',
@@ -573,8 +613,8 @@ function buildHtml(componentEntries) {
           <a class="ui-btn primary" href="/src/html/pages/paypoint.html">Ver PayPoint</a>
         </div>
       </header>
-      <p class="ui-stamp">Ultima generacion: ${escapeHtml(stamp)} | componentes: ${componentEntries.length}</p>
-      <section class="ui-grid">${componentEntries.join('')}</section>
+      <p class="ui-stamp">Ultima generacion: ${escapeHtml(stamp)} | componentes: ${componentCount}</p>
+      <section class="ui-grid" id="ui-grid"></section>
     </main>
     <script src="/src/js/pages/design-uikit.js"></script>
   </body>
@@ -588,21 +628,54 @@ function readComponentFiles() {
     .sort((a, b) => a.localeCompare(b));
 }
 
+function ensureDir(targetDir) {
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+}
+
 function generateOnce() {
+  ensureDir(COMPONENT_HTML_DIR);
+
   const componentFiles = readComponentFiles();
-  const entries = componentFiles.map((fileName) => {
+  const components = componentFiles.map((fileName) => {
     const raw = fs.readFileSync(path.join(COMPONENTS_DIR, fileName), 'utf8');
     const parsed = parseComponentMarkdown(raw);
-    return renderComponentCard(fileName, parsed);
+    const templateFile = `${path.basename(fileName, '.md')}.html`;
+
+    return {
+      specFile: fileName,
+      templateFile,
+      html: renderComponentCard(fileName, parsed),
+    };
   });
+
+  const activeTemplateFiles = new Set();
+  for (const component of components) {
+    activeTemplateFiles.add(component.templateFile);
+    fs.writeFileSync(path.join(COMPONENT_HTML_DIR, component.templateFile), `${component.html}\n`, 'utf8');
+  }
+
+  const existingTemplates = fs
+    .readdirSync(COMPONENT_HTML_DIR)
+    .filter((name) => name.endsWith('.html'));
+  for (const fileName of existingTemplates) {
+    if (!activeTemplateFiles.has(fileName)) {
+      fs.unlinkSync(path.join(COMPONENT_HTML_DIR, fileName));
+    }
+  }
 
   fs.writeFileSync(CSS_OUT, CSS_TEMPLATE, 'utf8');
   fs.writeFileSync(JS_OUT, JS_TEMPLATE, 'utf8');
-  fs.writeFileSync(HTML_OUT, buildHtml(entries), 'utf8');
+  fs.writeFileSync(HTML_OUT, buildHtml(components.length), 'utf8');
 
   const meta = {
     generatedAt: Date.now(),
     componentCount: componentFiles.length,
+    components: components.map((component) => ({
+      specFile: component.specFile,
+      templateFile: component.templateFile,
+    })),
   };
   fs.writeFileSync(META_OUT, `${JSON.stringify(meta, null, 2)}\n`, 'utf8');
 
@@ -623,7 +696,7 @@ function watchMode() {
       } catch (error) {
         console.error('[design-uikit] generate error:', error.message);
       }
-    }, 120);
+    }, 2000);
   };
 
   fs.watch(COMPONENTS_DIR, schedule);

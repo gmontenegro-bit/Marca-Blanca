@@ -1,0 +1,156 @@
+<div class="overlay" id="pay-overlay" onclick="payOverlayClick(event)">
+      <div class="bsheet" id="pay-sheet">
+        <div class="bs-handle"></div>
+
+        <div id="pay-step-1">
+          <div class="bs-head">
+            <div>
+              <div class="bs-title" id="pay-s1-title" data-i18n="layout.pay.step1Title">Pago de Servicio</div>
+              <div class="bs-sub" data-i18n="layout.pay.step1Sub">Como ingresas la factura del cliente?</div>
+            </div>
+            <button class="ib" onclick="closePayFlow()"><span class="mi">close</span></button>
+          </div>
+          <div class="bs-body">
+            <div class="steps" style="margin-bottom: 20px">
+              <div class="step-dot cur" id="sd1">1</div>
+              <div class="step-line" id="sl1"></div>
+              <div class="step-dot" id="sd2">2</div>
+              <div class="step-line" id="sl2"></div>
+              <div class="step-dot" id="sd3">3</div>
+              <div class="step-line" id="sl3"></div>
+              <div class="step-dot" id="sd4">4</div>
+            </div>
+
+            <div class="method-grid">
+              <div class="method-card" id="mc-manual" onclick="selectMethod('manual')">
+                <span class="mi">keyboard</span>
+                <div class="method-card-t" data-i18n="layout.pay.methodManualTitle">Manual</div>
+                <div class="method-card-s" data-i18n="layout.pay.methodManualSub">Ingresar NIS del cliente</div>
+              </div>
+              <div class="method-card" id="mc-scan" onclick="selectMethod('scan')">
+                <span class="mi">qr_code_scanner</span>
+                <div class="method-card-t" data-i18n="layout.pay.methodScanTitle">Escanear</div>
+                <div class="method-card-s" data-i18n="layout.pay.methodScanSub">Leer codigo de barras</div>
+              </div>
+            </div>
+
+            <button class="btn btn-p btn-full btn-lg" style="margin-top: 12px" id="btn-step1-next" onclick="goStep2()" disabled>
+              <span data-i18n="layout.pay.continue">Continuar</span> <span class="mi">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="pay-step-2" style="display: none">
+          <div class="bs-head">
+            <div>
+              <div class="bs-title" id="pay-s2-title" data-i18n="layout.pay.step2Title">Identificacion del cliente</div>
+              <div class="bs-sub" id="pay-s2-sub" data-i18n="layout.pay.step2Sub">Ingresa el NIS del cliente</div>
+            </div>
+            <button class="ib" onclick="goStep1()"><span class="mi">arrow_back</span></button>
+          </div>
+          <div class="bs-body">
+            <div class="steps" style="margin-bottom: 20px">
+              <div class="step-dot done" id="sd1b"><span class="mi">check</span></div>
+              <div class="step-line done"></div>
+              <div class="step-dot cur">2</div>
+              <div class="step-line"></div>
+              <div class="step-dot">3</div>
+              <div class="step-line"></div>
+              <div class="step-dot">4</div>
+            </div>
+
+            <div id="method-manual-ui">
+              <div class="fm-field">
+                <label class="fm-label" data-i18n="layout.pay.nisLabel">NIS - Numero de Identificacion del Servicio</label>
+                <input
+                  class="fm-input big"
+                  id="nis-input"
+                  type="text"
+                  placeholder="0000000"
+                  data-i18n-placeholder="layout.pay.nisPlaceholder"
+                  inputmode="numeric"
+                  maxlength="12"
+                  oninput="validateNIS()"
+                />
+                <div
+                  style="font-size: 11px; color: var(--on-sub); margin-top: 6px; text-align: center"
+                  data-i18n="layout.pay.nisHint"
+                >Encontras el NIS en la factura fisica del cliente</div>
+              </div>
+            </div>
+
+            <div id="method-scan-ui" style="display: none">
+              <div class="scanner-box scan-corners">
+                <div class="scan-line"></div>
+                <div
+                  style="color: rgba(255, 255, 255, 0.4); font-size: 12px; position: absolute; bottom: 12px"
+                  data-i18n="layout.pay.scanCameraHint"
+                >Apunta la camara al codigo de barras</div>
+              </div>
+              <div style="text-align: center; margin-bottom: 16px">
+                <div style="font-size: 13px; color: var(--on-mid); margin-bottom: 12px" data-i18n="layout.pay.scanManualSeparator">- o ingresa el codigo manualmente -</div>
+                <input
+                  class="fm-input big"
+                  id="scan-input"
+                  type="text"
+                  placeholder="Codigo de barras"
+                  data-i18n-placeholder="layout.pay.scanPlaceholder"
+                  inputmode="numeric"
+                />
+              </div>
+              <button class="btn btn-s btn-full" onclick="simulateScan()"><span class="mi">qr_code</span> <span data-i18n="layout.pay.simulateScan">Simular escaneo</span></button>
+            </div>
+
+            <button class="btn btn-p btn-full btn-lg" style="margin-top: 16px" onclick="goStep3()">
+              <span class="mi">search</span> <span data-i18n="layout.pay.searchBills">Buscar facturas pendientes</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="pay-step-3" style="display: none">
+          <div class="bs-head">
+            <div>
+              <div class="bs-title" data-i18n="layout.pay.step3Title">Facturas pendientes</div>
+              <div class="bs-sub" id="pay-s3-nis" data-i18n="layout.pay.step3SubDefault">NIS: -</div>
+            </div>
+            <button class="ib" onclick="goStep2()"><span class="mi">arrow_back</span></button>
+          </div>
+          <div class="bs-body">
+            <div class="steps" style="margin-bottom: 20px">
+              <div class="step-dot done"><span class="mi">check</span></div>
+              <div class="step-line done"></div>
+              <div class="step-dot done"><span class="mi">check</span></div>
+              <div class="step-line done"></div>
+              <div class="step-dot cur">3</div>
+              <div class="step-line"></div>
+              <div class="step-dot">4</div>
+            </div>
+
+            <div class="bill-list" id="bill-list"></div>
+
+            <button class="btn btn-p btn-full btn-lg" style="margin-top: 4px" id="btn-pay-now" onclick="goStep4()" disabled>
+              <span class="mi">payments</span> <span data-i18n="layout.pay.confirmPayment">Confirmar pago</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="pay-step-4" style="display: none">
+          <div class="bs-head">
+            <div>
+              <div class="bs-title" id="pay-s4-title" data-i18n="layout.pay.step4Title">Confirmar operacion</div>
+              <div class="bs-sub" data-i18n="layout.pay.step4Sub">Verifica los datos antes de procesar</div>
+            </div>
+            <button class="ib" onclick="showPayStep(3)"><span class="mi">arrow_back</span></button>
+          </div>
+          <div class="bs-body" id="pay-s4-body"></div>
+        </div>
+
+        <div id="pay-step-5" style="display: none">
+          <div class="bs-head">
+            <div><div class="bs-title" data-i18n="layout.pay.step5Title">Comprobante</div></div>
+            <button class="ib" onclick="closePayFlow()"><span class="mi">close</span></button>
+          </div>
+          <div class="bs-body" id="receipt-body"></div>
+        </div>
+      </div>
+    </div>

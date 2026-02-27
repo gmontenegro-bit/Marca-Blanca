@@ -188,6 +188,15 @@ const STATS = {
   anio: { ops: 14800, monto: '$2.1M', users: 4, avg: '1:52' },
 };
 
+const PAYPOINT_LAYOUT_MANIFEST_URL = '/src/html/layouts/paypoint/manifest.json';
+const PAYPOINT_TEXTS_URL = '/src/js/content/paypoint-texts.json';
+let TEXTS = {};
+
+function getText(path, fallback = '') {
+  const value = path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), TEXTS);
+  return value === undefined ? fallback : value;
+}
+
 /* App State */
 const S = {
   user: null,
@@ -216,8 +225,97 @@ function tick() {
   }
 }
 
-tick();
-setInterval(tick, 1000);
+async function loadLayout() {
+  const root = document.getElementById('app-root');
+  if (!root) {
+    throw new Error('No existe #app-root');
+  }
+
+  const manifestRes = await fetch(PAYPOINT_LAYOUT_MANIFEST_URL, { cache: 'no-store' });
+  if (!manifestRes.ok) {
+    throw new Error('No se pudo cargar manifest del layout de PayPoint');
+  }
+
+  const manifest = await manifestRes.json();
+  const parts = Array.isArray(manifest.parts) ? manifest.parts : [];
+  if (!parts.length) {
+    throw new Error('Manifest de layout sin partes');
+  }
+
+  const chunks = await Promise.all(
+    parts.map(async (url) => {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`No se pudo cargar parcial: ${url}`);
+      }
+      return res.text();
+    }),
+  );
+
+  root.innerHTML = chunks.join('\n');
+}
+
+async function loadTexts() {
+  const res = await fetch(PAYPOINT_TEXTS_URL, { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error('No se pudo cargar textos de PayPoint');
+  }
+  TEXTS = await res.json();
+}
+
+function setDefaultLoginCredentials() {
+  document.getElementById('in-cedula').value = DEMO_USERS.admin.cedula;
+  document.getElementById('in-pass').value = getText('login.demoPassword', 'demo1234');
+}
+
+function applyI18nToLayout() {
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n');
+    if (!key) {
+      return;
+    }
+    el.textContent = getText(key, el.textContent);
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (!key) {
+      return;
+    }
+    el.setAttribute('placeholder', getText(key, el.getAttribute('placeholder') || ''));
+  });
+
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-title');
+    if (!key) {
+      return;
+    }
+    el.setAttribute('title', getText(key, el.getAttribute('title') || ''));
+  });
+
+  document.querySelectorAll('[data-i18n-value]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-value');
+    if (!key || !('value' in el)) {
+      return;
+    }
+    el.value = getText(key, el.value || '');
+  });
+}
+
+async function bootstrap() {
+  try {
+    await Promise.all([loadLayout(), loadTexts()]);
+    applyI18nToLayout();
+    setDefaultLoginCredentials();
+    tick();
+    setInterval(tick, 1000);
+  } catch (error) {
+    const root = document.getElementById('app-root');
+    if (root) {
+      root.innerHTML = '<div class="page active"><p style="padding:24px">No se pudo iniciar PayPoint.</p></div>';
+    }
+  }
+}
 
 /* Demo role */
 function demoRole(r, el) {
@@ -239,7 +337,11 @@ function enterApp(user) {
   const initials = (user.nombre[0] + user.apellido[0]).toUpperCase();
   document.getElementById('user-av').textContent = initials;
   const rc = document.getElementById('role-chip');
-  const rlabels = { superadmin: 'Super Admin', admin: 'Administrador', operador: 'Operador/a' };
+  const rlabels = {
+    superadmin: getText('roleLabels.superadmin', 'Super Admin'),
+    admin: getText('roleLabels.admin', 'Administrador'),
+    operador: getText('roleLabels.operador', 'Operador/a'),
+  };
   rc.textContent = rlabels[user.rol] || user.rol;
   rc.className = 'role-chip ' + user.rol;
 
@@ -262,7 +364,7 @@ function doLogin() {
   const ced = document.getElementById('in-cedula').value.trim();
   const pas = document.getElementById('in-pass').value.trim();
   if (!ced || !pas) {
-    snack('Completa todos los campos', 'err');
+    snack(getText('login.emptyFields', 'Completa todos los campos'), 'err');
     return;
   }
 
@@ -301,17 +403,17 @@ function buildNav() {
   let bot = '';
 
   if (r === 'superadmin') {
-    top += navBtn('companies', 'business', 'Empresas');
-    top += navBtn('dash', 'bar_chart', 'Estadisticas');
-    top += navBtn('users', 'group', 'Usuarios');
+    top += navBtn('companies', 'business', getText('navigation.companies', 'Empresas'));
+    top += navBtn('dash', 'bar_chart', getText('navigation.stats', 'Estadisticas'));
+    top += navBtn('users', 'group', getText('navigation.users', 'Usuarios'));
   } else if (r === 'admin') {
-    top += navBtn('dash', 'bar_chart', 'Estadisticas');
-    top += navBtn('users', 'group', 'Usuarios');
+    top += navBtn('dash', 'bar_chart', getText('navigation.stats', 'Estadisticas'));
+    top += navBtn('users', 'group', getText('navigation.users', 'Usuarios'));
   }
-  top += navBtn('ops', 'receipt_long', 'Operaciones');
+  top += navBtn('ops', 'receipt_long', getText('navigation.operations', 'Operaciones'));
 
   if (r !== 'operador') {
-    bot = navBtn('config', 'palette', 'Marca / Config.');
+    bot = navBtn('config', 'palette', getText('navigation.brandConfig', 'Marca / Config.'));
   }
 
   document.getElementById('sb-top').innerHTML = top;
@@ -319,12 +421,12 @@ function buildNav() {
 
   const bnItems = [];
   if (r === 'superadmin' || r === 'admin') {
-    bnItems.push({ v: 'dash', ico: 'bar_chart', lbl: 'Estadisticas' });
-    bnItems.push({ v: 'users', ico: 'group', lbl: 'Usuarios' });
+    bnItems.push({ v: 'dash', ico: 'bar_chart', lbl: getText('navigation.stats', 'Estadisticas') });
+    bnItems.push({ v: 'users', ico: 'group', lbl: getText('navigation.users', 'Usuarios') });
   }
-  bnItems.push({ v: 'ops', ico: 'receipt_long', lbl: 'Operaciones' });
+  bnItems.push({ v: 'ops', ico: 'receipt_long', lbl: getText('navigation.operations', 'Operaciones') });
   if (r !== 'operador') {
-    bnItems.push({ v: 'config', ico: 'palette', lbl: 'Config.' });
+    bnItems.push({ v: 'config', ico: 'palette', lbl: getText('navigation.configShort', 'Config.') });
   }
 
   document.getElementById('bottom-nav').innerHTML = bnItems
@@ -358,9 +460,9 @@ function buildSvcGrid() {
   `
     ).join('') +
     `
-    <div class="svc-tile add-tile" onclick="snack('Solo Administradores pueden agregar servicios','warn')">
+    <div class="svc-tile add-tile" onclick="snack('${getText('services.addWarn', 'Solo Administradores pueden agregar servicios')}','warn')">
       <div class="svc-ico"><span class="mi">add_circle_outline</span></div>
-      <div class="svc-name">Agregar servicio</div>
+      <div class="svc-name">${getText('services.addLabel', 'Agregar servicio')}</div>
     </div>`;
 }
 
@@ -371,7 +473,7 @@ function startPayFlow(svcId, svcName) {
   S.payNIS = null;
   S.payBill = null;
 
-  document.getElementById('pay-s1-title').textContent = 'Pago - ' + svcName;
+  document.getElementById('pay-s1-title').textContent = getText('payFlow.titlePrefix', 'Pago - ') + svcName;
   document.querySelectorAll('.method-card').forEach((c) => c.classList.remove('sel'));
   document.getElementById('btn-step1-next').disabled = true;
 
@@ -407,11 +509,13 @@ function goStep2() {
     return;
   }
   document.getElementById('pay-s2-title').textContent =
-    S.payMethod === 'manual' ? 'Ingresa el NIS' : 'Escanear factura';
+    S.payMethod === 'manual'
+      ? getText('payFlow.manualTitle', 'Ingresa el NIS')
+      : getText('payFlow.scanTitle', 'Escanear factura');
   document.getElementById('pay-s2-sub').textContent =
     S.payMethod === 'manual'
-      ? 'NIS - Numero de Identificacion del Servicio'
-      : 'Leer codigo de barras de la factura';
+      ? getText('payFlow.manualSub', 'NIS - Numero de Identificacion del Servicio')
+      : getText('payFlow.scanSub', 'Leer codigo de barras de la factura');
   document.getElementById('method-manual-ui').style.display = S.payMethod === 'manual' ? '' : 'none';
   document.getElementById('method-scan-ui').style.display = S.payMethod === 'scan' ? '' : 'none';
   document.getElementById('nis-input').value = '';
@@ -425,7 +529,7 @@ function validateNIS() {
 
 function simulateScan() {
   document.getElementById('scan-input').value = '4829011200320';
-  snack('Codigo escaneado correctamente');
+  snack(getText('payFlow.scanOk', 'Codigo escaneado correctamente'));
 }
 
 function goStep1() {
@@ -440,7 +544,7 @@ function goStep3() {
       : document.getElementById('scan-input').value.trim();
 
   if (!nisVal) {
-    snack('Ingresa el NIS del cliente', 'err');
+    snack(getText('payFlow.nisRequired', 'Ingresa el NIS del cliente'), 'err');
     return;
   }
 
@@ -463,7 +567,11 @@ function goStep3() {
               <span style="color:${
                 inv.status === 'vencida' ? 'var(--err)' : 'var(--warn)'
               };font-weight:700">
-                ${inv.status === 'vencida' ? 'Vencida' : 'Pendiente'}
+                ${
+                  inv.status === 'vencida'
+                    ? getText('payFlow.billStatusExpired', 'Vencida')
+                    : getText('payFlow.billStatusPending', 'Pendiente')
+                }
               </span>
             </div>
           </div>
@@ -473,7 +581,10 @@ function goStep3() {
       `
         )
         .join('')
-    : `<div class="empty"><span class="mi">search_off</span><div class="empty-t">Sin facturas pendientes</div><div class="empty-s">No se encontraron facturas para este NIS</div></div>`;
+    : `<div class="empty"><span class="mi">search_off</span><div class="empty-t">${getText(
+        'payFlow.noBillsTitle',
+        'Sin facturas pendientes',
+      )}</div><div class="empty-s">${getText('payFlow.noBillsSub', 'No se encontraron facturas para este NIS')}</div></div>`;
 
   document.getElementById('btn-pay-now').disabled = true;
   showPayStep(3);
@@ -494,10 +605,11 @@ function selectBill(id) {
 /* Step 4 - confirm */
 function goStep4() {
   if (!S.payBill) {
-    snack('Selecciona una factura', 'err');
+    snack(getText('payFlow.billSelectRequired', 'Selecciona una factura'), 'err');
     return;
   }
-  document.getElementById('pay-s4-title').textContent = `Confirmar - ${S.payService.name}`;
+  document.getElementById('pay-s4-title').textContent =
+    getText('payFlow.confirmTitlePrefix', 'Confirmar - ') + S.payService.name;
   document.getElementById('pay-s4-body').innerHTML = `
     <div class="steps" style="margin-bottom:20px">
       <div class="step-dot done"><span class="mi">check</span></div>
@@ -509,25 +621,25 @@ function goStep4() {
       <div class="step-dot cur">4</div>
     </div>
     <div class="summ-card">
-      <div class="summ-row"><span class="summ-lbl">Servicio</span><span class="summ-val">${S.payService.name}</span></div>
-      <div class="summ-row"><span class="summ-lbl">NIS</span><span class="summ-val mono">${S.payNIS}</span></div>
-      <div class="summ-row"><span class="summ-lbl">Periodo</span><span class="summ-val">${S.payBill.period}</span></div>
-      <div class="summ-row"><span class="summ-lbl">Referencia</span><span class="summ-val mono">${S.payBill.id}</span></div>
-      <div class="summ-row"><span class="summ-lbl">Vencimiento</span><span class="summ-val">${S.payBill.due}</span></div>
-      <div class="summ-row summ-total"><span class="summ-lbl">Total a cobrar</span><span class="summ-val">$${S.payBill.amount.toFixed(
-        2
+      <div class="summ-row"><span class="summ-lbl">${getText('payFlow.summary.service', 'Servicio')}</span><span class="summ-val">${S.payService.name}</span></div>
+      <div class="summ-row"><span class="summ-lbl">${getText('payFlow.summary.nis', 'NIS')}</span><span class="summ-val mono">${S.payNIS}</span></div>
+      <div class="summ-row"><span class="summ-lbl">${getText('payFlow.summary.period', 'Periodo')}</span><span class="summ-val">${S.payBill.period}</span></div>
+      <div class="summ-row"><span class="summ-lbl">${getText('payFlow.summary.reference', 'Referencia')}</span><span class="summ-val mono">${S.payBill.id}</span></div>
+      <div class="summ-row"><span class="summ-lbl">${getText('payFlow.summary.due', 'Vencimiento')}</span><span class="summ-val">${S.payBill.due}</span></div>
+      <div class="summ-row summ-total"><span class="summ-lbl">${getText('payFlow.summary.total', 'Total a cobrar')}</span><span class="summ-val">$${S.payBill.amount.toFixed(
+        2,
       )}</span></div>
     </div>
     <p style="font-size:12px;color:var(--on-mid);margin-bottom:16px;text-align:center">
       <span class="mi" style="font-size:14px;vertical-align:middle">info</span>
-      Confirma que el cliente entrego el efectivo antes de procesar
+      ${getText('payFlow.summary.confirmHint', 'Confirma que el cliente entrego el efectivo antes de procesar')}
     </p>
     <div style="display:flex;gap:10px">
       <button class="btn btn-s" style="height:50px" onclick="showPayStep(3)">
         <span class="mi">arrow_back</span>
       </button>
       <button class="btn btn-p btn-full btn-lg" onclick="processPayment()">
-        <span class="mi">check_circle</span> Procesar pago
+        <span class="mi">check_circle</span> ${getText('payFlow.summary.processAction', 'Procesar pago')}
       </button>
     </div>
   `;
@@ -554,45 +666,50 @@ function processPayment() {
   document.getElementById('receipt-body').innerHTML = `
     <div class="receipt">
       <div class="receipt-check"><span class="mi">check_circle</span></div>
-      <div class="receipt-title">Pago procesado</div>
-      <div class="receipt-sub">La operacion se registro correctamente</div>
+      <div class="receipt-title">${getText('payFlow.receipt.title', 'Pago procesado')}</div>
+      <div class="receipt-sub">${getText('payFlow.receipt.sub', 'La operacion se registro correctamente')}</div>
 
       <div class="receipt-dashed">
         <div class="receipt-code">${code}</div>
-        <div style="font-size:11px;color:var(--on-sub);margin-bottom:12px">Codigo de comprobante</div>
-        <div class="receipt-field"><span class="rf-lbl">Servicio</span><span class="rf-val">${S.payService.name}</span></div>
-        <div class="receipt-field"><span class="rf-lbl">NIS</span><span class="rf-val mono">${S.payNIS}</span></div>
-        <div class="receipt-field"><span class="rf-lbl">Periodo</span><span class="rf-val">${S.payBill.period}</span></div>
-        <div class="receipt-field"><span class="rf-lbl">Referencia</span><span class="rf-val mono">${S.payBill.id}</span></div>
-        <div class="receipt-field"><span class="rf-lbl">Operador/a</span><span class="rf-val">${S.user.nombre} ${S.user.apellido}</span></div>
-        <div class="receipt-field"><span class="rf-lbl">Fecha y hora</span><span class="rf-val mono">${now.toLocaleDateString(
+        <div style="font-size:11px;color:var(--on-sub);margin-bottom:12px">${getText('payFlow.receipt.receiptCode', 'Codigo de comprobante')}</div>
+        <div class="receipt-field"><span class="rf-lbl">${getText('payFlow.summary.service', 'Servicio')}</span><span class="rf-val">${S.payService.name}</span></div>
+        <div class="receipt-field"><span class="rf-lbl">${getText('payFlow.summary.nis', 'NIS')}</span><span class="rf-val mono">${S.payNIS}</span></div>
+        <div class="receipt-field"><span class="rf-lbl">${getText('payFlow.summary.period', 'Periodo')}</span><span class="rf-val">${S.payBill.period}</span></div>
+        <div class="receipt-field"><span class="rf-lbl">${getText('payFlow.summary.reference', 'Referencia')}</span><span class="rf-val mono">${S.payBill.id}</span></div>
+        <div class="receipt-field"><span class="rf-lbl">${getText('payFlow.receipt.operator', 'Operador/a')}</span><span class="rf-val">${S.user.nombre} ${S.user.apellido}</span></div>
+        <div class="receipt-field"><span class="rf-lbl">${getText('payFlow.receipt.datetime', 'Fecha y hora')}</span><span class="rf-val mono">${now.toLocaleDateString(
           'es-NI'
         )} ${hora}</span></div>
         <div class="receipt-field" style="border-top:2px solid var(--line);padding-top:10px;margin-top:4px">
-          <span class="rf-lbl" style="font-weight:800;font-size:15px">Total pagado</span>
+          <span class="rf-lbl" style="font-weight:800;font-size:15px">${getText('payFlow.receipt.totalPaid', 'Total pagado')}</span>
           <span class="rf-val" style="font-size:18px;color:var(--p)">$${S.payBill.amount.toFixed(2)}</span>
         </div>
       </div>
 
       <div class="receipt-actions">
-        <button class="btn btn-s" style="height:46px;justify-content:center" onclick="snack('Comprobante enviado por WhatsApp')">
-          <span class="mi">share</span> Enviar
+        <button class="btn btn-s" style="height:46px;justify-content:center" onclick="snack('${getText('payFlow.receipt.whatsappSent', 'Comprobante enviado por WhatsApp')}')">
+          <span class="mi">share</span> ${getText('payFlow.receipt.send', 'Enviar')}
         </button>
         <button class="btn btn-s" style="height:46px;justify-content:center" onclick="printReceipt()">
-          <span class="mi">print</span> Imprimir
+          <span class="mi">print</span> ${getText('payFlow.receipt.print', 'Imprimir')}
         </button>
       </div>
       <button class="btn btn-p btn-full" style="margin-top:10px;height:46px" onclick="closePayFlow()">
-        <span class="mi">check</span> Listo
+        <span class="mi">check</span> ${getText('payFlow.receipt.done', 'Listo')}
       </button>
     </div>
   `;
   showPayStep(5);
-  snack('Pago de ' + S.payService.name + ' completado - $' + S.payBill.amount.toFixed(2));
+  snack(
+    getText('payFlow.receipt.successSnackPrefix', 'Pago de ') +
+      S.payService.name +
+      getText('payFlow.receipt.successSnackMiddle', ' completado - $') +
+      S.payBill.amount.toFixed(2),
+  );
 }
 
 function printReceipt() {
-  snack('Enviando a impresora...');
+  snack(getText('payFlow.receipt.printSending', 'Enviando a impresora...'));
   setTimeout(() => window.print(), 300);
 }
 
@@ -630,10 +747,10 @@ function setPeriod(p, btn) {
 function renderStats() {
   const s = STATS[S.period];
   document.getElementById('stats-grid').innerHTML = `
-    ${sc('Operaciones', s.ops, 'receipt_long', 'ico-p', 'up', '+11%')}
-    ${sc('Monto procesado', s.monto, 'attach_money', 'ico-g', 'up', '+8%')}
-    ${sc('Operadores activos', s.users, 'group', 'ico-b', 'fl', '-')} 
-    ${sc('Tiempo promedio', s.avg, 'timer', 'ico-a', 'dn', '-3%')}
+    ${sc(getText('stats.operations', 'Operaciones'), s.ops, 'receipt_long', 'ico-p', 'up', '+11%')}
+    ${sc(getText('stats.amountProcessed', 'Monto procesado'), s.monto, 'attach_money', 'ico-g', 'up', '+8%')}
+    ${sc(getText('stats.activeOperators', 'Operadores activos'), s.users, 'group', 'ico-b', 'fl', '-')} 
+    ${sc(getText('stats.avgTime', 'Tiempo promedio'), s.avg, 'timer', 'ico-a', 'dn', '-3%')}
   `;
 }
 
@@ -698,7 +815,11 @@ function renderChart() {
 /* Ops Table */
 function renderOpsTable(data) {
   const status = { completado: 'chip-g', pendiente: 'chip-a', fallido: 'chip-r' };
-  const slabel = { completado: 'OK', pendiente: 'Pendiente', fallido: 'Fallido' };
+  const slabel = {
+    completado: getText('opsTable.status.completado', 'OK'),
+    pendiente: getText('opsTable.status.pendiente', 'Pendiente'),
+    fallido: getText('opsTable.status.fallido', 'Fallido'),
+  };
   document.getElementById('ops-tbody').innerHTML = data.length
     ? data
         .map(
@@ -712,7 +833,10 @@ function renderOpsTable(data) {
       </tr>`
         )
         .join('')
-    : `<tr><td colspan="6"><div class="empty"><span class="mi">search_off</span><div class="empty-t">Sin resultados</div></div></td></tr>`;
+    : `<tr><td colspan="6"><div class="empty"><span class="mi">search_off</span><div class="empty-t">${getText(
+        'opsTable.empty',
+        'Sin resultados',
+      )}</div></div></td></tr>`;
 }
 
 let _filterQ = '';
@@ -748,8 +872,12 @@ function buildUsersTable(list) {
         </div>
       </td>
       <td class="mono" style="font-size:11px">${u.cedula}</td>
-      <td><span class="chip ${u.rol === 'admin' ? 'chip-p' : 'chip-b'}">${u.rol === 'admin' ? 'Admin' : 'Operador/a'}</span></td>
-      <td><span class="chip ${u.estado === 'activo' ? 'chip-g' : 'chip-n'}">${u.estado === 'activo' ? 'Activo' : 'Inactivo'}</span></td>
+      <td><span class="chip ${u.rol === 'admin' ? 'chip-p' : 'chip-b'}">${
+        u.rol === 'admin' ? getText('users.roleAdmin', 'Admin') : getText('users.roleOperator', 'Operador/a')
+      }</span></td>
+      <td><span class="chip ${u.estado === 'activo' ? 'chip-g' : 'chip-n'}">${
+        u.estado === 'activo' ? getText('users.stateActive', 'Activo') : getText('users.stateInactive', 'Inactivo')
+      }</span></td>
       <td class="mono">${u.ops}</td>
       <td>
         <div style="display:flex;gap:6px">
@@ -773,11 +901,11 @@ function filterUsers(q) {
 }
 
 function openUserModal() {
-  document.getElementById('usr-modal-title').textContent = 'Agregar Usuario';
+  document.getElementById('usr-modal-title').textContent = getText('users.modalAddTitle', 'Agregar Usuario');
   ['u-nombre', 'u-apellido', 'u-cedula'].forEach((id) => {
     document.getElementById(id).value = '';
   });
-  document.getElementById('u-pass').value = 'Cambiar123';
+  document.getElementById('u-pass').value = getText('users.defaultTempPassword', 'Cambiar123');
   document.getElementById('user-overlay').classList.add('open');
 }
 
@@ -786,7 +914,7 @@ function editUser(id) {
   if (!u) {
     return;
   }
-  document.getElementById('usr-modal-title').textContent = 'Editar Usuario';
+  document.getElementById('usr-modal-title').textContent = getText('users.modalEditTitle', 'Editar Usuario');
   document.getElementById('u-nombre').value = u.nombre;
   document.getElementById('u-apellido').value = u.apellido;
   document.getElementById('u-cedula').value = u.cedula;
@@ -803,7 +931,13 @@ function toggleUser(id) {
   }
   u.estado = u.estado === 'activo' ? 'inactivo' : 'activo';
   buildUsersTable(USERS_DB);
-  snack(`Usuario ${u.estado === 'activo' ? 'habilitado' : 'deshabilitado'}: ${u.nombre} ${u.apellido}`);
+  snack(
+    `Usuario ${
+      u.estado === 'activo'
+        ? getText('users.toggleEnabled', 'habilitado')
+        : getText('users.toggleDisabled', 'deshabilitado')
+    }: ${u.nombre} ${u.apellido}`,
+  );
 }
 
 function saveUser() {
@@ -811,7 +945,7 @@ function saveUser() {
   const a = document.getElementById('u-apellido').value.trim();
   const c = document.getElementById('u-cedula').value.trim();
   if (!n || !a || !c) {
-    snack('Completa nombre, apellido y cedula', 'err');
+    snack(getText('users.saveMissing', 'Completa nombre, apellido y cedula'), 'err');
     return;
   }
   USERS_DB.push({
@@ -827,7 +961,7 @@ function saveUser() {
   });
   buildUsersTable(USERS_DB);
   document.getElementById('user-overlay').classList.remove('open');
-  snack(`${n} ${a} agregado/a correctamente`);
+  snack(`${n} ${a}${getText('users.saveSuccessSuffix', ' agregado/a correctamente')}`);
 }
 
 function closeUserModal(e) {
@@ -838,7 +972,7 @@ function closeUserModal(e) {
 
 /* Brand Config */
 function previewBrand() {
-  const name = document.getElementById('cfg-name').value || 'PayPoint';
+  const name = document.getElementById('cfg-name').value || getText('brand.defaultName', 'PayPoint');
   const logo = document.getElementById('cfg-logo').value;
   document.getElementById('bp-name').textContent = name;
   const pl = document.getElementById('bp-logo');
@@ -871,13 +1005,13 @@ function applyColorHex(hex) {
 }
 
 function saveBrand() {
-  const name = document.getElementById('cfg-name').value || 'PayPoint';
+  const name = document.getElementById('cfg-name').value || getText('brand.defaultName', 'PayPoint');
   document.getElementById('tb-name').textContent = name;
   const loginHero = document.getElementById('login-hero-name');
   if (loginHero) {
     loginHero.textContent = name;
   }
-  snack('Configuracion guardada correctamente');
+  snack(getText('brand.saveSuccess', 'Configuracion guardada correctamente'));
 }
 
 /* Snackbar */
@@ -895,6 +1029,4 @@ function snack(msg, type = 'ok') {
   _snackT = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
-/* Default demo */
-document.getElementById('in-cedula').value = DEMO_USERS.admin.cedula;
-document.getElementById('in-pass').value = 'demo1234';
+bootstrap();

@@ -29,8 +29,17 @@ Este repositorio alinea a diseno y front-end usando agentes en un prototipo admi
 - Nombres en `kebab-case` para carpetas y archivos nuevos.
 - Un feature relevante debe reflejarse en codigo + handoff.
 - Separar responsabilidades: `tokens`, `base`, `pages`, `modules`.
+- Regla obligatoria de componentes:
+  - Si se solicita un componente nuevo, crear archivos separados por componente (HTML/CSS/JS) y luego integrarlo en la pantalla.
+  - Si se solicita una pantalla nueva y aparece un componente inexistente, primero crear ese componente por separado y despues consumirlo desde la pantalla.
+  - No resolver componentes nuevos con bloques inline ni codigo duplicado dentro de `pages`.
+- Ubicaciones objetivo para componentes implementados:
+  - HTML: `src/html/components/<componente>.html` o `src/html/components/<pantalla>/<componente>.html`.
+  - CSS: `src/css/components/<componente>.css`.
+  - JS: `src/js/modules/<componente>.js`.
 
 ## Definition of done
 - Pantalla funcional en HTML/CSS/JS.
 - Estados importantes cubiertos (default, hover/focus, empty/error/loading cuando aplique).
 - Accesibilidad minima: estructura semantica, labels, foco visible.
+- Si hubo componente nuevo: existe spec en `design/components/`, implementacion separada en `src/` y pantalla conectada a ese componente.

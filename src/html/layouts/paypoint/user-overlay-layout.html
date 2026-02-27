@@ -1,0 +1,59 @@
+<div class="overlay" id="user-overlay" onclick="closeUserModal(event)">
+      <div class="bsheet">
+        <div class="bs-handle"></div>
+        <div class="bs-head">
+          <div>
+            <div class="bs-title" id="usr-modal-title" data-i18n="users.modalAddTitle">Agregar Usuario</div>
+            <div class="bs-sub" data-i18n="layout.userModal.sub">Solo usuarios registrados pueden iniciar sesion</div>
+          </div>
+          <button class="ib" onclick="document.getElementById('user-overlay').classList.remove('open')">
+            <span class="mi">close</span>
+          </button>
+        </div>
+        <div class="bs-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+            <div class="fm-field">
+              <label class="fm-label" data-i18n="layout.userModal.nameLabel">Nombre</label>
+              <input class="fm-input" id="u-nombre" type="text" placeholder="Nombre(s)" data-i18n-placeholder="layout.userModal.namePlaceholder" />
+            </div>
+            <div class="fm-field">
+              <label class="fm-label" data-i18n="layout.userModal.lastNameLabel">Apellido</label>
+              <input class="fm-input" id="u-apellido" type="text" placeholder="Apellido(s)" data-i18n-placeholder="layout.userModal.lastNamePlaceholder" />
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+            <div class="fm-field">
+              <label class="fm-label" data-i18n="layout.userModal.idTypeLabel">Tipo de cedula</label>
+              <select class="fm-select" id="u-tipo">
+                <option value="nacional" data-i18n="layout.userModal.idTypeNational">Cedula Nacional</option>
+                <option value="residencia" data-i18n="layout.userModal.idTypeResidence">Residencia</option>
+                <option value="pasaporte" data-i18n="layout.userModal.idTypePassport">Pasaporte</option>
+              </select>
+            </div>
+            <div class="fm-field">
+              <label class="fm-label" data-i18n="layout.userModal.idNumberLabel">Numero de cedula</label>
+              <input class="fm-input" id="u-cedula" type="text" placeholder="000-000000-0000X" data-i18n-placeholder="layout.userModal.idNumberPlaceholder" />
+            </div>
+          </div>
+          <div class="fm-field">
+            <label class="fm-label" data-i18n="layout.userModal.roleLabel">Rol en la plataforma</label>
+            <select class="fm-select" id="u-rol">
+              <option value="operador" data-i18n="roleLabels.operador">Operador/a</option>
+              <option value="admin" data-i18n="roleLabels.admin">Administrador</option>
+            </select>
+          </div>
+          <div class="fm-field">
+            <label class="fm-label" data-i18n="layout.userModal.tempPasswordLabel">Contrasena temporal</label>
+            <input class="fm-input" id="u-pass" type="text" value="Cambiar123" data-i18n-value="users.defaultTempPassword" />
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 8px">
+            <button class="btn btn-s" style="height: 48px" onclick="document.getElementById('user-overlay').classList.remove('open')">
+              <span data-i18n="layout.userModal.cancel">Cancelar</span>
+            </button>
+            <button class="btn btn-p btn-full" style="height: 48px" onclick="saveUser()">
+              <span class="mi">person_add</span> <span data-i18n="layout.userModal.save">Guardar usuario</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>

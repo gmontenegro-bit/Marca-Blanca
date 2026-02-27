@@ -19,6 +19,11 @@ Cada pantalla o componente debe incluir:
 
 El handoff final se guarda en `docs/handoff/`.
 
+## Regla de descomposicion obligatoria
+- Si se pide un componente nuevo: crear siempre un spec dedicado en `components/<nombre>-component.md`.
+- Si se pide una pantalla nueva y aparece un componente que no existe: documentar primero ese componente en `components/` y luego referenciarlo desde `screens/<nombre>-screen.md`.
+- Ninguna pantalla en `screens/` debe introducir componentes nuevos sin su spec separado en `components/`.
+
 ## Contexto actual
 El prototipo implementado en codigo es `paypoint`.
 Archivos base de diseno ya creados:

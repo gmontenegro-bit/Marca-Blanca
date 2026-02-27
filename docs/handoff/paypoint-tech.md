@@ -7,17 +7,29 @@
 
 ## Source of truth
 - `src/html/pages/paypoint.html`
+- `src/html/layouts/paypoint/manifest.json`
+- `src/html/layouts/paypoint/login-layout.html`
+- `src/html/layouts/paypoint/app-layout.html`
+- `src/html/layouts/paypoint/pay-overlay-layout.html`
+- `src/html/layouts/paypoint/user-overlay-layout.html`
+- `src/html/layouts/paypoint/snack-layout.html`
 - `src/css/tokens/theme.css`
 - `src/css/base/reset.css`
 - `src/css/pages/paypoint.css`
 - `src/js/pages/paypoint.js`
+- `src/js/content/paypoint-texts.json`
 
 ## Estructura tecnica
 ### HTML
-- `pg-login` (pantalla inicial)
-- `pg-app` (app shell y vistas)
-- overlays: `pay-overlay`, `user-overlay`
-- feedback: `snack`
+- `paypoint.html` actua como shell y monta `#app-root`.
+- `manifest.json` define el orden de ensamblado de mini-layouts.
+- Layout dividido en parciales:
+  - `login-layout.html` (`pg-login`)
+  - `app-layout.html` (`pg-app`)
+  - `pay-overlay-layout.html` (`pay-overlay`)
+  - `user-overlay-layout.html` (`user-overlay`)
+  - `snack-layout.html` (`snack`)
+- El copy del layout usa atributos `data-i18n`, `data-i18n-placeholder`, `data-i18n-title` y `data-i18n-value`.
 
 ### CSS
 - `theme.css`: tokens + dark mode
@@ -27,6 +39,8 @@
 ### JS
 - Estado global en objeto `S`.
 - Datos mock: usuarios, servicios, facturas, operaciones, stats.
+- Textos UI centralizados en `src/js/content/paypoint-texts.json`.
+- `bootstrap()` carga `manifest.json`, ensambla parciales de layout, aplica i18n y luego inicializa reloj + credenciales demo.
 - Render dinamico de nav, tablas, cards y overlays.
 
 ## Mapa de funciones clave (paypoint.js)
